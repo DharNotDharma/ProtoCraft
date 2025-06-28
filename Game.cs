@@ -22,7 +22,6 @@ namespace ProtoCraft
           -0.5f,  0.0f, 0.0f    // left
          };
 
-        // VAO, VBO, EBO, and Shader Program variables
         //Render Pipeline vars
         int vao;
         int shaderProgram;
