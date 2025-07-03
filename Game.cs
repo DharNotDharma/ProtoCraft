@@ -77,23 +77,22 @@ namespace ProtoCraft
                 
                // put the vertex VBo
 
-
                 // Slot 0  
                 GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
                 GL.EnableVertexArrayAttrib(vao, 0);
 
                GL.BindBuffer(BufferTarget.ArrayBuffer, 0); // unbind the VBO
 
-                //Slot 1 for texture coordinates
-                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
-                GL.EnableVertexArrayAttrib(vao, 1);
-
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0); // unbind the VBO
-
                 //Texture Coordinates
                 textureVBO = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, textureVBO);
                 GL.BufferData(BufferTarget.ArrayBuffer, texCoords.Length * sizeof(float), texCoords, BufferUsageHint.StaticDraw);
+                
+                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
+                GL.EnableVertexAttribArray(1);
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0); // unbind the VBO
+            
                 //Load shader program
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindVertexArray(0);
@@ -163,9 +162,11 @@ namespace ProtoCraft
 
                 //The triangle
                 GL.UseProgram(shaderProgram);
+                int texUniformLocation = GL.GetUniformLocation(shaderProgram, "texture0");
+                GL.Uniform1(texUniformLocation, 0); // Bind sampler 'texture0' to texture unit 0
                 
+                GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, textureID);
-
                 GL.BindVertexArray(vao);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
                 GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
