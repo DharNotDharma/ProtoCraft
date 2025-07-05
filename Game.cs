@@ -16,24 +16,95 @@ namespace ProtoCraft
     public class Game : GameWindow
     {
 
-       
-        float[] vertices = {
-         -0.5f,  0.5f, 0f,  // top-left
-          0.5f,  0.5f, 0f,  // top-right
-          0.5f, -0.5f, 0f,  // bottom-right
-         -0.5f, -0.5f, 0f   // bottom-left
-         };
 
-        float[] texCoords = {
-            0f, 1f, // top-left
-            1f, 1f, // top-right
-            1f, 0f, // bottom-right
-            0f, 0f  // bottom-left
+        List<Vector3> vertices = new List<Vector3>()
+        {
+        // front face
+            new Vector3(-0.5f, 0.5f, 0.5f), // topleft vert
+            new Vector3(0.5f, 0.5f, 0.5f), // topright vert
+            new Vector3(0.5f, -0.5f, 0.5f), // bottomright vert
+            new Vector3(-0.5f, -0.5f, 0.5f), // bottomleft vert
+            // right face
+            new Vector3(0.5f, 0.5f, 0.5f), // topleft vert
+            new Vector3(0.5f, 0.5f, -0.5f), // topright vert
+            new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
+            new Vector3(0.5f, -0.5f, 0.5f), // bottomleft vert
+            // back face
+            new Vector3(0.5f, 0.5f, -0.5f), // topleft vert
+            new Vector3(-0.5f, 0.5f, -0.5f), // topright vert
+            new Vector3(-0.5f, -0.5f, -0.5f), // bottomright vert
+            new Vector3(0.5f, -0.5f, -0.5f), // bottomleft vert
+            // left face
+            new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
+            new Vector3(-0.5f, 0.5f, 0.5f), // topright vert
+            new Vector3(-0.5f, -0.5f, 0.5f), // bottomright vert
+            new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
+            // top face
+            new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
+            new Vector3(0.5f, 0.5f, -0.5f), // topright vert
+            new Vector3(0.5f, 0.5f, 0.5f), // bottomright vert
+            new Vector3(-0.5f, 0.5f, 0.5f), // bottomleft vert
+            // bottom face
+            new Vector3(-0.5f, -0.5f, 0.5f), // topleft vert
+            new Vector3(0.5f, -0.5f, 0.5f), // topright vert
+            new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
+            new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
         };
 
+
+        List<Vector2> texCoords = new List<Vector2>()
+        {
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 0f),
+            new Vector2(0f, 0f),
+        };
         uint[] indices = {
-            0, 1, 2, // top triangle
-            2, 3, 0  // bottom triangle
+            // first face
+            // top triangle
+            0, 1, 2,
+            // bottom triangle
+            2, 3, 0,
+
+            4, 5, 6,
+            6, 7, 4,
+
+            8, 9, 10,
+            10, 11, 8,
+
+            12, 13, 14,
+            14, 15, 12,
+
+            16, 17, 18,
+            18, 19, 16,
+
+            20, 21, 22,
+            22, 23, 20
         };
         //Render Pipeline vars
         int vao;
@@ -42,6 +113,9 @@ namespace ProtoCraft
         int ebo; //element buffer object for indices
         int textureID; //texture ID for the texture we will load
         int textureVBO; //texture VBO for texture coordinates
+
+        //tranformation matrix variables
+        float yRot = 0f;
 
         // everything involving height and width should be in here 
         int width, height;
@@ -73,7 +147,7 @@ namespace ProtoCraft
                 
                 vbo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * Vector3.SizeInBytes, vertices.ToArray(), BufferUsageHint.StaticDraw);
                 
                // put the vertex VBo
 
@@ -86,7 +160,7 @@ namespace ProtoCraft
                 //Texture Coordinates
                 textureVBO = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, textureVBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, texCoords.Length * sizeof(float), texCoords, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, texCoords.Count * Vector2.SizeInBytes, texCoords.ToArray(), BufferUsageHint.StaticDraw);
                 
                 GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
                 GL.EnableVertexAttribArray(1);
@@ -140,6 +214,8 @@ namespace ProtoCraft
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, dirtTexture.Width, dirtTexture.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, dirtTexture.Data);
                 // unbind the texture
                 GL.BindTexture(TextureTarget.Texture2D, 0);
+                
+                GL.Enable(EnableCap.DepthTest); // Enable depth testing for 3D rendering
 
         }     
 
@@ -169,9 +245,31 @@ namespace ProtoCraft
                 GL.BindTexture(TextureTarget.Texture2D, textureID);
                 GL.BindVertexArray(vao);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
+                
+
+                // transformation matrix
+                Matrix4 model = Matrix4.Identity;
+                Matrix4 view = Matrix4.Identity;
+                Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60.0f), width / height, 0.1f, 100f);
+
+                model = Matrix4.CreateRotationY(yRot);
+                yRot += 0.0005f; // Increment rotation angle for animation
+
+                Matrix4 translation = Matrix4.CreateTranslation(0f, 0f, -3f);
+
+                model *= translation;
+                
+                int modelLocation = GL.GetUniformLocation(shaderProgram, "model");
+                int viewLocation = GL.GetUniformLocation(shaderProgram, "view");
+                int projectionLocation = GL.GetUniformLocation(shaderProgram, "projection");
+
+                GL.UniformMatrix4(modelLocation, false, ref model);
+                GL.UniformMatrix4(viewLocation, false, ref view);
+                GL.UniformMatrix4(projectionLocation, false, ref projection);
+                
                 GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
                 //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-                    
+            
                 Context.SwapBuffers();
                 base.OnRenderFrame(args);
 
