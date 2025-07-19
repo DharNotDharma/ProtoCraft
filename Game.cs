@@ -114,6 +114,9 @@ namespace ProtoCraft
         int textureID; //texture ID for the texture we will load
         int textureVBO; //texture VBO for texture coordinates
 
+        // Camera vars
+        Camera camera;
+
         //tranformation matrix variables
         float yRot = 0f;
 
@@ -209,13 +212,16 @@ namespace ProtoCraft
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                 // load the texture image
                 StbImage.stbi_set_flip_vertically_on_load(1); // flip the image vertically
-                ImageResult dirtTexture = ImageResult.FromStream(File.OpenRead("../../../Textures/tnt_top.png"), ColorComponents.RedGreenBlueAlpha);
+                ImageResult dirtTexture = ImageResult.FromStream(File.OpenRead("../../../Textures/dirtTex.png"), ColorComponents.RedGreenBlueAlpha);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, dirtTexture.Width, dirtTexture.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, dirtTexture.Data);
                 // unbind the texture
                 GL.BindTexture(TextureTarget.Texture2D, 0);
                 
                 GL.Enable(EnableCap.DepthTest); // Enable depth testing for 3D rendering
+
+                camera = new Camera(width, height, Vector3.Zero);
+                CursorState = CursorState.Grabbed; // Lock the cursor to the center of the window
 
         }     
 
@@ -249,8 +255,8 @@ namespace ProtoCraft
 
                 // transformation matrix
                 Matrix4 model = Matrix4.Identity;
-                Matrix4 view = Matrix4.Identity;
-                Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60.0f), width / height, 0.1f, 100f);
+                Matrix4 view = camera.GetViewMatrix();
+                Matrix4 projection = camera.GetProjectionMatrix();
 
                 model = Matrix4.CreateRotationY(yRot);
                 yRot += 0.0005f; // Increment rotation angle for animation
@@ -276,12 +282,11 @@ namespace ProtoCraft
         }
         protected override void OnUpdateFrame(FrameEventArgs args)
             {
+                MouseState mouse = MouseState;
+                KeyboardState input = KeyboardState;
+            
                 base.OnUpdateFrame(args);
-
-                if (KeyboardState.IsKeyDown(Keys.Escape))
-                {
-                    Close();
-                }
+                camera.Update(input, mouse, args);
             }
         public static string LoadShaderSource(string filePath)
         {
