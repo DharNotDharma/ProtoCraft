@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Graphics\" />
+    <Folder Include="World\" />
     <Folder Include="Textures\" />
   </ItemGroup>
 
