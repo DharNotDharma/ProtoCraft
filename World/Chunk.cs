@@ -40,49 +40,37 @@ namespace ProtoCraft.World
         }
 
         public void GenChunk() { } // generate the data
-        public void GenBlocks() { 
-            for(int i = 0; i < 3; i++)
+        public void GenBlocks()
             {
-                Block block = new Block(new Vector3(i, 0, 0));
+                int chunkWidth = 16;   // X
+                int chunkDepth = 16;   // Z
+                int chunkHeight = 8;   // Y
 
-                int faceCount = 0;
-
-                if(i == 0)
+                for (int x = 0; x < chunkWidth; x++)
                 {
-                    var leftFaceData = block.GetFace(Faces.LEFT);
-                    chunkVerts.AddRange(leftFaceData.vertices);
-                    chunkUVs.AddRange(leftFaceData.uv);
-                    faceCount++;
+                    for (int z = 0; z < chunkDepth; z++)
+                    {
+                        // Make the step/stairstep shape:
+                        int surfaceHeight = (x + z) / 4 + 2; // You can tweak the math for more/less steep
+
+                        for (int y = 0; y <= surfaceHeight; y++)
+                        {
+                            BlockType type = (y == surfaceHeight) ? BlockType.GRASS : BlockType.DIRT;
+                            Block block = new Block(new Vector3(x, y, z), type);
+
+                            // Render all 6 faces for every block (simple, works for now)
+                            foreach (Faces face in Enum.GetValues(typeof(Faces)))
+                            {
+                                var faceData = block.GetFace(face);
+                                chunkVerts.AddRange(faceData.vertices);
+                                chunkUVs.AddRange(faceData.uv);
+                            }
+
+                            AddIndices(6); // 6 faces per block
+                        }
+                    }
                 }
-                if (i == 2)
-                {
-                    var rightFaceData = block.GetFace(Faces.RIGHT);
-                    chunkVerts.AddRange(rightFaceData.vertices);
-                    chunkUVs.AddRange(rightFaceData.uv);
-                    faceCount++;
-                }
-
-                var frontFaceData = block.GetFace(Faces.FRONT);
-                chunkVerts.AddRange(frontFaceData.vertices);
-                chunkUVs.AddRange(frontFaceData.uv);
-
-                var backFaceData = block.GetFace(Faces.BACK);
-                chunkVerts.AddRange(backFaceData.vertices);
-                chunkUVs.AddRange(backFaceData.uv);
-
-                var topFaceData = block.GetFace(Faces.TOP);
-                chunkVerts.AddRange(topFaceData.vertices);
-                chunkUVs.AddRange(topFaceData.uv);
-
-                var bottomFaceData = block.GetFace(Faces.BOTTOM);
-                chunkVerts.AddRange(bottomFaceData.vertices);
-                chunkUVs.AddRange(bottomFaceData.uv);
-
-                faceCount += 4;
-
-                AddIndices(faceCount);
             }
-        } // generate the appropriate block faces given the data
         public void AddIndices(int amtFaces)
         {
             for(int i = 0; i < amtFaces; i++)
@@ -111,7 +99,7 @@ namespace ProtoCraft.World
 
             chunkIBO = new IBO(chunkIndices);
 
-            texture = new Texture("dirtTex.png");
+            texture = new Texture("atlas.png");
         } // take data and process it for rendering
         public void Render(ShaderProgram program) // drawing the chunk
         {

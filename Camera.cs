@@ -15,7 +15,7 @@ namespace ProtoCraft
         private float SPEED = 8f;
         private float SCREENWIDTH;
         private float SCREENHEIGHT;
-        private float SENSITIVITY = 180f;
+        private float SENSITIVITY = 360f;
 
         // position vars
         public Vector3 position;
