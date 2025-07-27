@@ -18,6 +18,7 @@ namespace ProtoCraft.World
                     {Faces.LEFT, new Vector2(2f, 15f) },
                     {Faces.RIGHT, new Vector2(2f, 15f) },
                     {Faces.BACK, new Vector2(2f, 15f) },
+
                     {Faces.TOP, new Vector2(2f, 15f) },
                     {Faces.BOTTOM, new Vector2(2f, 15f) },
                 }
